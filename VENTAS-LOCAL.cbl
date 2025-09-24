@@ -1,0 +1,191 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.                VENTAS-LOCAL.
+
+       DATE-WRITTEN.              19/2/2023.
+       AUTHOR.                    LUCAS GALEANO.
+
+       ENVIRONMENT DIVISION.
+
+       INPUT-OUTPUT SECTION.
+
+       FILE-CONTROL.
+           SELECT REPORTE-VENTAS  ASSIGN TO "VENTAS.DAT"
+                                  ORGANIZATION IS INDEXED
+                                  ACCESS MODE  IS DYNAMIC
+                                  RECORD KEY   IS ID-PRODUCTO.
+
+           SELECT STOCK-MAESTRO   ASSIGN TO "STOCK-MAESTRO.DAT"
+                                  ORGANIZATION IS INDEXED
+                                  ACCESS MODE  IS DYNAMIC
+                                  RECORD KEY   IS LLAVE-NUMERO-PRODUCTO.
+
+           SELECT TICKET          ASSIGN TO "TICKET.DAT"
+                                  ORGANIZATION IS LINE SEQUENTIAL.
+       DATA DIVISION.
+
+       FILE SECTION.
+
+       FD REPORTE-VENTAS.
+       01 VENTA.
+           05 ID-PRODUCTO         PIC 9(2).
+           05 NOMBRE              PIC X(20).
+           05 U-VENDIDAS          PIC 9(2).
+           05 PRECIO-BASE         PIC 9(4).
+
+       FD STOCK-MAESTRO.
+
+       01 LLAVE.
+           05 LLAVE-NUMERO-PRODUCTO PIC 9(2).
+       01 REG-PRODUCTOS.
+           05 NOMBRE-PRO          PIC X(20).
+           05 CANTIDAD-INICIAL    PIC 9(3).
+           05 ENTRADA             PIC 9(3).
+           05 SALIDA              PIC 9(3).
+           05 TOTAL               PIC 9(3).
+           05 VALOR-VENTA         PIC 9(5) VALUE ZEROS.
+       FD TICKET.
+
+       01 TICKET-DATOS.
+           05 TABLA OCCURS 100.
+               10 CANTIDAD        PIC 9(2).
+               10 NOMBRE-PRO-T    PIC X(20).
+               10 PRECIO          PIC 9(5).
+               10 TOTAL-T         PIC 9(5).
+               10 RECIBIMOS       PIC 9(5).
+               10 VUELTO          PIC 9(5).
+
+       WORKING-STORAGE SECTION.
+
+      *>**********************************************************************
+      *>*                       MENU INTERFAZ                                *
+      *>**********************************************************************
+       01 WS-TITULO.
+           05 FILLER              PIC X(38).
+           05 FILLER              PIC X(4)  VALUE "MENU".
+           05 FILLER              PIC X(38).
+
+       01 WS-OPC-1.
+           05 FILLER              PIC X(36) VALUE SPACES.
+           05 FILLER              PIC X(17) VALUE "1.REGISTRAR VENTA".
+           05 FILLER              PIC X(36) VALUE SPACES.
+       01 WS-OPC-2.
+           05 FILLER              PIC X(36) VALUE SPACES.
+           05 FILLER              PIC X(17) VALUE "2.PROCESAR TICKET".
+           05 FILLER              PIC X(36) VALUE SPACES.
+       01 WS-OPC-3.
+           05 FILLER              PIC X(36) VALUE SPACES.
+           05 FILLER              PIC X(17) VALUE "3.IMPRIMIR TICKET".
+           05 FILLER              PIC X(36) VALUE SPACES.
+
+       01 WS-OPC-0.
+           05 FILLER              PIC X(36) VALUE SPACES.
+           05 FILLER              PIC X(8)  VALUE "0.SALIR.".
+           05 FILLER              PIC X(36) VALUE SPACES.
+
+      *>***********************************************************************
+      *>*                       TICKET INTERFAZ                               *
+      *>***********************************************************************
+
+       01 WS-COLUMNA1.
+           05 FILLER              PIC X(10) VALUE SPACES.
+           05 FILLER              PIC X(59) VALUE ALL "=".
+           05 FILLER              PIC X(10) VALUE SPACES.
+
+
+
+       01 WS-COLUMNA2.
+           05 FILLER              PIC X(10) VALUE SPACES.
+           05 FILLER              PIC X(59) VALUE ALL "=".
+           05 FILLER              PIC X(10) VALUE SPACES.
+
+       01 WS-LINEA-PRODUCTO.
+           05 FILLER              PIC X(15) VALUE SPACES.
+           05 WS-CANTIDAD         PIC 9(2).
+           05 WS-NOMBRE-PRO       PIC X(20).
+           05 FILLER              PIC X(30) VALUE SPACES.
+           05 WS-PRECIO           PIC 9(5).
+           05 FILLER              PIC X(15) VALUE SPACES.
+
+       01 WS-LINEA-TOTAL.
+           05 FILLER              PIC X(37).
+           05 FILLER              PIC X(7) VALUE "TOTAL: ".
+           05 WS-TOTAL            PIC 9(5).
+           05 FILLER              PIC X(37).
+
+       01 WS-LINEA-RECIBO.
+           05 FILLER              PIC X(34).
+           05 FILLER              PIC X(11) VALUE "RECIBIMOS: ".
+           05 WS-RECIBIMOS        PIC 9(5).
+           05 FILLER              PIC X(34).
+
+       01 WS-LINEA-VUELTO.
+           05 FILLER              PIC X(36).
+           05 FILLER              PIC X(8) VALUE "VUELTO: ".
+           05 WS-VUELTO           PIC 9(5).
+           05 FILLER              PIC X(36).
+
+       77 WS-TERMINAR-PROG        PIC X(2)  VALUE "F".
+       77 WS-CONTINUAR            PIC X(2)  VALUE "T".
+       77 WS-REG-EXISTE           PIC X     VALUE "T".
+       77 WS-OPC                  PIC 9.
+
+       PROCEDURE DIVISION.
+
+       MENU.
+           OPEN OUTPUT REPORTE-VENTAS.
+           CLOSE REPORTE-VENTAS.
+           OPEN I-O REPORTE-VENTAS.
+           OPEN I-O STOCK-MAESTRO.
+           OPEN OUTPUT TICKET.
+           PERFORM UNTIL WS-TERMINAR-PROG = "T"
+               DISPLAY WS-TITULO
+               DISPLAY " "
+               DISPLAY WS-OPC-1
+               DISPLAY " "
+               DISPLAY WS-OPC-2
+               DISPLAY " "
+               DISPLAY WS-OPC-3
+               DISPLAY " "
+               DISPLAY WS-OPC-0
+               ACCEPT WS-OPC
+           EVALUATE WS-OPC
+               WHEN 1 PERFORM REGISTRAR-VENTA
+      *>       WHEN 2 PERFORM PROCESAR-TICKET
+      *>       WHEN 3 PERFORM IMPRIMIR-TICKET
+               WHEN 0 MOVE "SI" TO WS-TERMINAR-PROG
+           END-EVALUATE
+           END-PERFORM.
+           CLOSE REPORTE-VENTAS.
+           CLOSE STOCK-MAESTRO.
+           CLOSE TICKET.
+           STOP RUN.
+
+       REGISTRAR-VENTA.
+           INITIALIZE REG-PRODUCTOS
+           PERFORM UNTIL WS-CONTINUAR = "F"
+           DISPLAY "INGRESE ID DEL PRODUCTO: " WITH NO ADVANCING
+
+           ACCEPT LLAVE-NUMERO-PRODUCTO
+           READ STOCK-MAESTRO
+               INVALID KEY MOVE "F" TO WS-REG-EXISTE
+           END-READ
+           IF WS-REG-EXISTE = "F" THEN
+               DISPLAY " "
+               DISPLAY "PRODUCTO FUERA DE STOCK."
+           ELSE
+               INITIALIZE VENTA
+               MOVE LLAVE-NUMERO-PRODUCTO TO ID-PRODUCTO
+
+           READ REPORTE-VENTAS
+               INVALID KEY CONTINUE
+               NOT INVALID KEY
+                   ADD 1 TO U-VENDIDAS
+                   REWRITE VENTA
+               DISPLAY "REPORTE ACTUALIZADO."
+           END-READ
+
+               MOVE NOMBRE-PRO TO NOMBRE
+               MOVE VALOR-VENTA TO PRECIO-BASE
+               WRITE VENTA
+               DISPLAY "REPORTE CREADO."
+           END-PERFORM.

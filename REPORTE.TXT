@@ -1,0 +1,20 @@
+
+                           CENTRO DE CAPACITACION
+ FECHA: 28/11/2016         EMPLEADOS DE LA EMPRESA                 PAGINA:   1
+ ------------------------------------------------------------------------------
+    NUMERO            NOMBRE               STATUS  DEPTO PUESTO    SALARIO
+ ------------------------------------------------------------------------------
+      192    JUAN PEREZ Y PEREZ                8    103    18      32,000.50
+      227    ROBERTO MEDINA GUTIERREZ          8    104    21      12,500.00
+      429    JOSE DE JESUS MEDINA NARES        3    105    67      15,600.32
+      571    ADALBERTO MACIAS BELTRAN          8    495    14      45,700.00
+                                      .
+                                      .
+                                      .
+
+ TOTAL DE EMPLEADOS LEIDOS  :  1,200
+
+ TOTAL DE EMPLEADOS IMPRESOS:  1,200
+
+ SUMA TOTAL DE SALARIOS     :  $2,105,800.50
+

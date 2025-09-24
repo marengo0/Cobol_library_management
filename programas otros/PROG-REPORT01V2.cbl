@@ -1,0 +1,68 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.                PROG-REPORT01.
+       AUTHOR.                    LUCAS GALEANO.
+       DATE-WRITTEN.              28/1/2023.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT MASTER-EMPLOYEES ASSIGN TO "EMPLOYEE.DAT"
+                  ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD MASTER-EMPLOYEES.
+       01 EMPLOYEE-DETAILS.
+           05 EMP-NUMBER          PIC 9(5).
+           05 EMP-IDE.
+               10 EMP-SUR         PIC X(15).
+               10 EMP-NAME        PIC X(15).
+           05 EMP-ID              PIC 9(8).
+           05 EMP-GENDER          PIC X.
+           05 SALARY              PIC 9(6).
+
+       WORKING-STORAGE SECTION.
+       77 WS-TOTAL-SALARY         PIC 9(9) VALUE ZEROS.
+       77 WS-TOTAL-SALARY-EDIT    PIC $ZZZZZZZZZ.
+       77 WS-COUNTER-M            PIC 9(3).
+       77 WS-COUNTER-M-EDIT       PIC ZZZ.
+       77 WS-COUNTER-F            PIC 9(3).
+       77 WS-COUNTER-F-EDIT       PIC ZZZ.
+       77 WS-TOTAL-EMP            PIC 9(4).
+       77 WS-TOTAL-EMP-EDIT       PIC ZZZZ.
+
+       PROCEDURE DIVISION.
+       BEGIN-EMP-INPUT.
+       OPEN INPUT MASTER-EMPLOYEES.
+           READ MASTER-EMPLOYEES
+               AT END MOVE HIGH-VALUES TO EMPLOYEE-DETAILS
+           END-READ.
+           PERFORM UNTIL EMPLOYEE-DETAILS = HIGH-VALUES
+               ADD 1 TO WS-TOTAL-EMP
+               ADD SALARY TO WS-TOTAL-SALARY
+               IF EMP-GENDER = "M"
+                   ADD 1 TO WS-COUNTER-M
+                   ELSE
+                   ADD 1 TO WS-COUNTER-F
+               END-IF
+               DISPLAY EMP-NUMBER SPACE EMP-IDE SPACE EMP-ID SPACE EMP-GENDER
+                                  SPACE SALARY
+               READ MASTER-EMPLOYEES
+                   AT END MOVE HIGH-VALUES TO EMPLOYEE-DETAILS
+               END-READ
+           END-PERFORM.
+               CLOSE MASTER-EMPLOYEES.
+
+       DATA-DISPLAY.
+           MOVE WS-TOTAL-SALARY TO WS-TOTAL-SALARY-EDIT.
+           MOVE WS-COUNTER-F    TO WS-COUNTER-F-EDIT.
+           MOVE WS-COUNTER-M    TO WS-COUNTER-M-EDIT.
+           MOVE WS-TOTAL-EMP    TO WS-TOTAL-EMP-EDIT.
+
+           DISPLAY " ".
+           DISPLAY "TOTAL NUMBER OF EMPLOYEES:",WS-TOTAL-EMP-EDIT.
+           DISPLAY "TOTAL NUMBER OF MALE EMPLOYEES:",WS-COUNTER-M-EDIT.
+           DISPLAY "TOTAL NUMBER OF FEMALE EMPLOYEES:",WS-COUNTER-F-EDIT.
+           DISPLAY "TOTAL SALARIES: ",WS-TOTAL-SALARY-EDIT.
+           STOP RUN.
+           END PROGRAM PROG-REPORT01.

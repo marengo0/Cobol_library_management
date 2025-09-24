@@ -1,0 +1,9 @@
+       01 TABLA-TICKET.
+           05 COLUMNAS.
+               10 WS-COL-1        PIC X(59).
+               10
+           05 DATOS.
+               10 WS-NOMBRE-PRO   PIC X(20).
+               10 WS-SEPARADOR    PIC (30) VALUE SPACES.
+               10 WS-PRECIO       PIC 9(5).
+               10 WS-TOTAL        PIC 9(5).

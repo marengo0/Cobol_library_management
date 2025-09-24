@@ -1,0 +1,49 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.                CONTROL-STOCK.
+       DATE-WRITTEN.              9/2/2023.
+       AUTHOR.                    LUCAS GALEANO.
+
+       ENVIRONMENT DIVISION.
+
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+
+           SELECT STOCK-MAESTRO ASSIGN TO "STOCK-MAESTRO.DAT"
+                                  ORGANIZATION IS INDEXED
+                                  ACCESS MODE IS DYNAMIC
+                                  RECORD KEY IS LLAVE-NUMERO-PRODUCTO.
+
+       DATA DIVISION.
+       FILE SECTION.
+
+       FD STOCK-MAESTRO.
+
+       01 REG-PRODUCTOS.
+           05 LLAVE-NUMERO-PRODUCTO PIC 99.
+           05 NOMBRE-PRODUCTO     PIC X(12).
+           05 CANTIDAD-INICIAL    PIC 9(3).
+           05 ENTRADA             PIC 9(3).
+           05 SALIDA              PIC 9(3).
+           05 TOTAL               PIC 9(3).
+           05 VALOR-VENTA         PIC 9(5).
+
+       PROCEDURE DIVISION.
+
+       010-ABRIR-ESCRIBIR-ARCHIVO.
+
+           OPEN OUTPUT STOCK-MAESTRO.
+           DISPLAY "INGRESE EL PRODUCTO USANDO LA SIGUIENTE PLANTILLA"
+                           " PARA FINALIZAR PRECIONE -ESPACIO-".
+           PERFORM 030-INGRESE-PRODUCTO.
+           PERFORM UNTIL REG-PRODUCTOS = SPACES
+               WRITE REG-PRODUCTOS
+           PERFORM 030-INGRESE-PRODUCTO
+           END-PERFORM.
+
+       020-CERRAR-ARCHIVO.
+           CLOSE STOCK-MAESTRO.
+           STOP-RUN.
+
+       030-INGRESE-PRODUCTO.
+           DISPLAY "NNPPPPPPPPPPPPIIIEEESSSTTT$$$$$".
+           ACCEPT REG-PRODUCTOS.
